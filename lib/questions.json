@@ -1,0 +1,61 @@
+{
+  "questions": [
+    {
+      "id": "math_001",
+      "lessonId": "algebra_basics",
+      "questionText": "Solve for x: 2x + 5 = 15",
+      "type": "multipleChoice",
+      "options": ["x = 5", "x = 10", "x = 7.5", "x = 3"],
+      "correctAnswer": "x = 5",
+      "explanation": "Subtract 5 from both sides: 2x = 10. Then divide by 2: x = 5",
+      "imageUrl": null,
+      "difficulty": 2,
+      "timeLimit": 60,
+      "tags": ["algebra", "linear_equations", "basic"]
+    },
+    {
+      "id": "eng_001",
+      "lessonId": "grammar_basics",
+      "questionText": "Which sentence is grammatically correct?",
+      "type": "multipleChoice",
+      "options": [
+        "She don't like apples",
+        "She doesn't likes apples",
+        "She doesn't like apples",
+        "She don't likes apples"
+      ],
+      "correctAnswer": "She doesn't like apples",
+      "explanation": "Use 'doesn't' with singular subjects and the base form of the verb",
+      "imageUrl": null,
+      "difficulty": 1,
+      "timeLimit": 45,
+      "tags": ["grammar", "subject_verb_agreement"]
+    },
+    {
+      "id": "phy_001",
+      "lessonId": "motion_basics",
+      "questionText": "A car travels 100km in 2 hours. What is its average speed?",
+      "type": "multipleChoice",
+      "options": ["25 km/h", "50 km/h", "100 km/h", "200 km/h"],
+      "correctAnswer": "50 km/h",
+      "explanation": "Speed = Distance ÷ Time = 100km ÷ 2hrs = 50 km/h",
+      "imageUrl": null,
+      "difficulty": 2,
+      "timeLimit": 60,
+      "tags": ["kinematics", "speed", "motion"]
+    },
+    {
+      "id": "math_002",
+      "lessonId": "algebra_basics",
+      "questionText": "The sum of two consecutive numbers is 25. What is the smaller number?",
+      "type": "fillInBlank",
+      "options": [],
+      "correctAnswer": "12",
+      "explanation": "Let x be the smaller number. Then x + (x+1) = 25, so 2x + 1 = 25, giving x = 12",
+      "imageUrl": null,
+      "difficulty": 3,
+      "timeLimit": 90,
+      "tags": ["algebra", "word_problems"]
+    }
+  ]
+}
