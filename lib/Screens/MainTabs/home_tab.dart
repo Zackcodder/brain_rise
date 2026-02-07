@@ -1,6 +1,7 @@
 import 'package:brain_rise/Screens/subject_details_screen.dart';
 import 'package:brain_rise/providers/progress_provider.dart';
 import 'package:brain_rise/providers/user_provider.dart';
+import 'package:brain_rise/services/local_storage_service.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -25,8 +26,8 @@ class _HomeTabState extends State<HomeTab> {
   }
 
   Future _loadData() async {
-    final storage = context.read();
-    final user = context.read().currentUser;
+    final storage = context.read<LocalStorageService>();
+    final user = context.read<UserProvider>().currentUser;
 
     if (user != null) {
       final allSubjects = await storage.getAllSubjects();

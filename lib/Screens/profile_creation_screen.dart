@@ -1,10 +1,11 @@
 import 'package:brain_rise/Screens/home_screen.dart';
+import 'package:brain_rise/providers/user_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 class ProfileCreationScreen extends StatefulWidget {
   final String examType;
-  final List selectedSubjects;
+  final List<String> selectedSubjects;
   const ProfileCreationScreen({
     super.key,
     required this.examType,
@@ -33,7 +34,7 @@ class _ProfileCreationScreenState extends State<ProfileCreationScreen> {
     setState(() => _isCreating = true);
 
     try {
-      final userProvider = context.read();
+      final userProvider = context.read<UserProvider>();
       await userProvider.createUser(
         name: _nameController.text.trim(),
         age: _age,
@@ -51,6 +52,7 @@ class _ProfileCreationScreenState extends State<ProfileCreationScreen> {
         );
       }
     } catch (e) {
+      print('Error creating profile wahala: $e');
       if (mounted) {
         ScaffoldMessenger.of(
           context,

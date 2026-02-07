@@ -86,7 +86,6 @@ class _SelectSubjectScreenState extends State<SelectSubjectScreen> {
                             onTap: () => _toggleSubject(subject.id),
                             borderRadius: BorderRadius.circular(16),
                             child: Container(
-                              padding: const EdgeInsets.all(16),
                               decoration: BoxDecoration(
                                 color: isSelected
                                     ? Color(
@@ -116,11 +115,13 @@ class _SelectSubjectScreenState extends State<SelectSubjectScreen> {
                               child: Column(
                                 mainAxisAlignment: MainAxisAlignment.center,
                                 children: [
+                                  ///subject Icon
                                   Text(
                                     subject.iconUrl,
                                     style: const TextStyle(fontSize: 40),
                                   ),
-                                  const SizedBox(height: 12),
+
+                                  ///subject Name
                                   Text(
                                     subject.name,
                                     style: Theme.of(context)
@@ -131,13 +132,16 @@ class _SelectSubjectScreenState extends State<SelectSubjectScreen> {
                                     maxLines: 2,
                                     overflow: TextOverflow.ellipsis,
                                   ),
-                                  const SizedBox(height: 4),
+
+                                  ///number of lessons
                                   Text(
                                     '${subject.totalLessons} lessons',
                                     style: Theme.of(
                                       context,
                                     ).textTheme.bodySmall,
                                   ),
+
+                                  ///check icon if selected
                                   if (isSelected)
                                     Padding(
                                       padding: const EdgeInsets.only(top: 8),
@@ -161,6 +165,8 @@ class _SelectSubjectScreenState extends State<SelectSubjectScreen> {
                       ),
                     ),
                     const SizedBox(height: 16),
+
+                    ///Continue Button
                     SizedBox(
                       width: double.infinity,
                       child: ElevatedButton(

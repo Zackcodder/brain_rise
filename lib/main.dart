@@ -11,25 +11,38 @@ import 'package:provider/provider.dart';
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
-  // Initialize Hive
+  // Initialize Hive and create storage service
   await LocalStorageService.init();
+  final storage = LocalStorageService();
 
-  runApp(const BrainRiseApp());
+  runApp(BrainRiseApp(storage: storage));
 }
 
-class BrainRiseApp extends StatelessWidget {
-  const BrainRiseApp({super.key});
+class BrainRiseApp extends StatefulWidget {
+  final LocalStorageService storage;
+
+  const BrainRiseApp({super.key, required this.storage});
+
+  @override
+  State<BrainRiseApp> createState() => _BrainRiseAppState();
+}
+
+class _BrainRiseAppState extends State<BrainRiseApp> {
+  late final LocalStorageService _storage;
+
+  @override
+  void initState() {
+    super.initState();
+    _storage = widget.storage;
+  }
 
   @override
   Widget build(BuildContext context) {
-    final storage = LocalStorageService();
-
     return MultiProvider(
       providers: [
-        Provider.value(value: storage),
-        Provider(create: (_) => QuestionService(storage)),
-        ChangeNotifierProvider(create: (_) => UserProvider(storage)),
-
+        Provider.value(value: _storage),
+        Provider(create: (_) => QuestionService(_storage)),
+        ChangeNotifierProvider(create: (_) => UserProvider(_storage)),
         ChangeNotifierProxyProvider<UserProvider, GamificationProvider>(
           create: (context) =>
               GamificationProvider(context.read<UserProvider>()),
@@ -39,7 +52,7 @@ class BrainRiseApp extends StatelessWidget {
           },
         ),
         ChangeNotifierProvider(
-          create: (context) => ProgressProvider(storage, context.read()),
+          create: (context) => ProgressProvider(_storage, context.read()),
         ),
       ],
       child: MaterialApp(

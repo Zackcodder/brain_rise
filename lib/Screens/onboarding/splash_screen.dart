@@ -1,5 +1,7 @@
 import 'package:brain_rise/Screens/home_screen.dart';
 import 'package:brain_rise/Screens/welcome_screen.dart';
+import 'package:brain_rise/providers/user_provider.dart';
+import 'package:brain_rise/services/questions_services.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -14,29 +16,43 @@ class _SplashScreenState extends State<SplashScreen> {
   @override
   void initState() {
     super.initState();
-    _initialize();
+    // Wait for the first frame to be painted before initializing
+    // This ensures all providers are properly initialized
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _initialize();
+    });
   }
 
   Future _initialize() async {
-    final questionService = context.read();
+    // Ensure we have a valid context
+    if (!mounted) return;
+    final questionService = context.read<QuestionService>();
 
-    // Load initial data if not already loaded
+    ///Load initial data if not already loaded
     final isLoaded = await questionService.isDataLoaded();
+    if (!mounted) return;
+
     if (!isLoaded) {
       await questionService.loadInitialData();
     }
 
-    // Check if user exists
-    await Future.delayed(const Duration(seconds: 2));
+    // Wait for user provider to load
+    if (!mounted) return;
 
-    if (mounted) {
-      final userProvider = context.read();
-      final hasUser = userProvider.isLoggedIn;
+    // Small delay to ensure smooth transition
+    await Future.delayed(const Duration(seconds: 5));
 
-      Navigator.of(context).pushReplacement(
-        MaterialPageRoute(builder: (_) => const WelcomeScreen()),
-      );
-    }
+    if (!mounted) return;
+
+    final userProvider = context.read<UserProvider>();
+    final hasUser = userProvider.isLoggedIn;
+
+    // Navigate to appropriate screen based on login status
+    Navigator.of(context).pushReplacement(
+      MaterialPageRoute(
+        builder: (_) => hasUser ? const HomeScreen() : const WelcomeScreen(),
+      ),
+    );
   }
 
   @override
