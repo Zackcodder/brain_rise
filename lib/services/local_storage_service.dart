@@ -229,6 +229,20 @@ class LocalStorageService {
         .toList();
   }
 
+  Future<List<Question>> getQuestionsBySubject(String subjectId) async {
+    if (Hive.isBoxOpen(questionsBoxName)) {
+      final box = Hive.box<Question>(questionsBoxName);
+      return box.values
+          .where((question) => question.lessonId.startsWith(subjectId))
+          .toList();
+    }
+    await Hive.openBox<Question>(questionsBoxName);
+    final box = Hive.box<Question>(questionsBoxName);
+    return box.values
+        .where((question) => question.lessonId.startsWith(subjectId))
+        .toList();
+  }
+
   Future<Question?> getQuestionById(String id) async {
     if (Hive.isBoxOpen(questionsBoxName)) {
       final box = Hive.box<Question>(questionsBoxName);

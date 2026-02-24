@@ -1,11 +1,14 @@
+import 'package:brain_rise/Screens/quiz_screen.dart';
 import 'package:brain_rise/Screens/subject_details_screen.dart';
 import 'package:brain_rise/providers/progress_provider.dart';
 import 'package:brain_rise/providers/user_provider.dart';
 import 'package:brain_rise/services/local_storage_service.dart';
+import 'package:brain_rise/services/questions_services.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 import '../../core/app_theme.dart';
+import '../../models/lesson_progress_model.dart';
 import '../../models/subject_model.dart';
 
 class HomeTab extends StatefulWidget {
@@ -322,78 +325,92 @@ class _HomeTabState extends State<HomeTab> {
       ),
     );
   }
+}
 
-  Widget _buildSubjectCard(Subject subject) {
-    return Consumer(
-      builder: (context, progressProvider, child) {
-        return Card(
-          margin: const EdgeInsets.only(bottom: 12),
-          child: InkWell(
-            onTap: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (_) => SubjectDetailsScreen(subject: subject),
-                ),
-              );
-            },
-            borderRadius: BorderRadius.circular(16),
-            child: Padding(
-              padding: const EdgeInsets.all(16),
-              child: Row(
-                children: [
-                  Container(
-                    width: 60,
-                    height: 60,
-                    decoration: BoxDecoration(
-                      color: Color(
-                        int.parse(subject.color.replaceFirst('#', '0xFF')),
-                      ).withOpacity(0.2),
-                      borderRadius: BorderRadius.circular(12),
-                    ),
-                    child: Center(
-                      child: Text(
-                        subject.iconUrl,
-                        style: const TextStyle(fontSize: 30),
-                      ),
+Widget _buildSubjectCard(Subject subject) {
+  return Consumer2<UserProvider, ProgressProvider>(
+    builder: (context, userProvider, progressProvider, child) {
+      final user = userProvider.currentUser;
+      if (user == null) return const SizedBox();
+
+      // Calculate actual progress based on completed lessons
+      final progressMap = progressProvider.getProgressMapForUser(user.id);
+      final completedLessons = progressMap.values
+          .where((progress) => progress.status == LessonStatus.completed)
+          .where((progress) {
+            // Check if this lesson belongs to the subject
+            // For now, we'll use a simple heuristic based on lessonId prefix
+            return progress.lessonId.startsWith(subject.id);
+          })
+          .length;
+
+      final progress = subject.totalLessons > 0
+          ? completedLessons / subject.totalLessons
+          : 0.0;
+
+      return Card(
+        margin: const EdgeInsets.only(bottom: 12),
+        child: InkWell(
+          onTap: () {
+            Navigator.push(
+              context,
+              MaterialPageRoute(builder: (_) => QuizScreen(subject: subject)),
+            );
+          },
+          borderRadius: BorderRadius.circular(16),
+          child: Padding(
+            padding: const EdgeInsets.all(16),
+            child: Row(
+              children: [
+                Container(
+                  width: 60,
+                  height: 60,
+                  decoration: BoxDecoration(
+                    color: Color(
+                      int.parse(subject.color.replaceFirst('#', '0xFF')),
+                    ).withOpacity(0.2),
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  child: Center(
+                    child: Text(
+                      subject.iconUrl,
+                      style: const TextStyle(fontSize: 30),
                     ),
                   ),
-                  const SizedBox(width: 16),
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          subject.name,
-                          style: Theme.of(context).textTheme.titleLarge,
-                        ),
-                        const SizedBox(height: 4),
-                        Text(
-                          '${subject.totalLessons} lessons',
-                          style: Theme.of(context).textTheme.bodyMedium,
-                        ),
-                        const SizedBox(height: 8),
-                        LinearProgressIndicator(
-                          value: 0.3, // TODO: Calculate actual progress
-                          backgroundColor: Colors.grey.shade200,
-                          valueColor: AlwaysStoppedAnimation(
-                            Color(
-                              int.parse(
-                                subject.color.replaceFirst('#', '0xFF'),
-                              ),
-                            ),
+                ),
+                const SizedBox(width: 16),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        subject.name,
+                        style: Theme.of(context).textTheme.titleLarge,
+                      ),
+                      const SizedBox(height: 4),
+                      Text(
+                        '$completedLessons / ${subject.totalLessons} lessons completed',
+                        style: Theme.of(context).textTheme.bodyMedium,
+                      ),
+                      const SizedBox(height: 8),
+                      LinearProgressIndicator(
+                        value: progress,
+                        backgroundColor: Colors.grey.shade200,
+                        valueColor: AlwaysStoppedAnimation(
+                          Color(
+                            int.parse(subject.color.replaceFirst('#', '0xFF')),
                           ),
                         ),
-                      ],
-                    ),
+                      ),
+                    ],
                   ),
-                  const Icon(Icons.chevron_right),
-                ],
-              ),
+                ),
+                const Icon(Icons.chevron_right),
+              ],
             ),
           ),
-        );
-      },
-    );
-  }
+        ),
+      );
+    },
+  );
 }

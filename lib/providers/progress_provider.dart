@@ -101,4 +101,12 @@ class ProgressProvider with ChangeNotifier {
 
     return totalQuestions > 0 ? totalCorrect / totalQuestions : 0.0;
   }
+
+  Future<List<Lesson>> getLessonsBySubject(String subjectId) async {
+    return await _storage.getLessonsBySubject(subjectId);
+  }
+
+  Map<String, LessonProgress> getProgressMapForUser(String userId) {
+    return Map.from(_progressMap);
+  }
 }

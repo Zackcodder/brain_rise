@@ -8,7 +8,7 @@ plugins {
 android {
     namespace = "com.example.brain_rise"
     compileSdk = flutter.compileSdkVersion
-    ndkVersion = flutter.ndkVersion
+    ndkVersion = "29.0.0"
 
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_11
