@@ -1,40 +1,34 @@
-# TODO List for BrainRise App Updates
+# TODO: Add More Lessons and Questions
 
-## 1. Create 30 Random Questions for All Subjects
-- [x] Add 30 new questions distributed across Mathematics, English, Physics, Chemistry, Biology
-- [x] Ensure questions are varied in difficulty and type
-- [x] Update lib/services/questions_services.dart with new questions
+## Objective
+Add more lessons (topics) to subjects with up to 20 questions per topic.
 
-## 2. Complete Subject Screen on Bottom Nav Bar
-- [x] Implement full SubjectScreen widget
-- [x] Show all available subjects with icons and descriptions
-- [x] Allow navigation to subject details
-- [x] Update lib/Screens/subject_screen.dart
+## Tasks
 
-## 3. Complete Leadership Board Screen
-- [x] Implement LeadershipBoardScreen widget
-- [x] Show user rankings based on levels, XP, or completed lessons
-- [x] Fetch data from providers
-- [x] Update lib/Screens/leadership_board_screen.dart
+- [x] 1. Analyze codebase and understand current structure
+- [x] 2. Update Subject model - set totalLessons to 20 for all subjects
+- [x] 3. Add 15 new lessons per subject (total 20 lessons per subject)
+- [x] 4. Add 15-20 questions per lesson
+- [x] 5. Update lesson questionIds to reference new questions
 
-## 4. Make Home Screen Function Based on Quizzes Answered
-- [x] Calculate actual progress for each subject based on answered questions
-- [x] Update progress bars in HomeTab
-- [x] Show quiz-based stats instead of hardcoded values
-- [x] Update lib/Screens/MainTabs/home_tab.dart
+## Subjects Updated
+- Mathematics (20 lessons) ✅
+- English Language (20 lessons) ✅
+- Physics (20 lessons) ✅
+- Chemistry (20 lessons) ✅
+- Biology (20 lessons) ✅
 
-## 5. Implement Topic Details and Study Material
-- [ ] Create topic_details_screen.dart for reading about topics with examples
-- [ ] Update subject_details_screen.dart to show lessons in grid view
-- [ ] Add navigation from lesson grid to topic details
+## Summary
+- Total Subjects: 5
+- Total Lessons: 100 (20 per subject)
+- Total Questions: 2000 (20 per lesson × 100 lessons)
 
-## 6. Implement Quiz Functionality
-- [ ] Create quiz_screen.dart for taking quizzes with questions and options
-- [ ] Create quiz_results_screen.dart for showing score and navigation options
-- [ ] Update home_tab.dart to navigate to quiz when clicking subject cards
-- [ ] Add scoring logic and progress tracking
+## Implementation Details
+- Each lesson now has 20 questions
+- Questions are dynamically generated with topics matching the lesson
+- Difficulty scales with lesson progression (1-5)
+- Prerequisites set up for sequential learning
+- XP and Gems rewards increased for higher lessons
 
-## Followup Steps
-- [x] Test the app in debug mode
-- [ ] Build and test release APK
-- [ ] Ensure all screens work properly
+
+

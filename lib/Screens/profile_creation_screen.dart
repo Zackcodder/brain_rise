@@ -17,7 +17,7 @@ class ProfileCreationScreen extends StatefulWidget {
 }
 
 class _ProfileCreationScreenState extends State<ProfileCreationScreen> {
-  final _formKey = GlobalKey();
+  final _formKey = GlobalKey<FormState>();
   final _nameController = TextEditingController();
   int _age = 15;
   bool _isCreating = false;
@@ -29,7 +29,7 @@ class _ProfileCreationScreenState extends State<ProfileCreationScreen> {
   }
 
   Future _createProfile() async {
-    // if (!_formKey.currentState!.validate()) return;
+    if (!_formKey.currentState!.validate()) return;
 
     setState(() => _isCreating = true);
 

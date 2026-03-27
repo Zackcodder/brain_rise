@@ -21,25 +21,24 @@ class UserAdapter extends TypeAdapter<User> {
       name: fields[1] as String,
       email: fields[2] as String?,
       age: fields[3] as int,
-      targetExam: fields[4] as String,
-      selectedSubjects: (fields[5] as List).cast<String>(),
-      totalXP: fields[6] as int,
-      currentLevel: fields[7] as int,
-      gems: fields[8] as int,
-      hearts: fields[9] as int,
-      currentStreak: fields[10] as int,
-      longestStreak: fields[11] as int,
-      lastActiveDate: fields[12] as DateTime?,
-      createdAt: fields[13] as DateTime,
-      avatarUrl: fields[14] as String,
-      weeklyXP: (fields[15] as Map?)?.cast<String, int>(),
+      examPreparations: (fields[4] as List).cast<ExamPreparation>(),
+      totalXP: fields[5] as int,
+      currentLevel: fields[6] as int,
+      gems: fields[7] as int,
+      hearts: fields[8] as int,
+      currentStreak: fields[9] as int,
+      longestStreak: fields[10] as int,
+      lastActiveDate: fields[11] as DateTime?,
+      createdAt: fields[12] as DateTime,
+      avatarUrl: fields[13] as String,
+      weeklyXP: (fields[14] as Map).cast<String, int>(),
     );
   }
 
   @override
   void write(BinaryWriter writer, User obj) {
     writer
-      ..writeByte(16)
+      ..writeByte(15)
       ..writeByte(0)
       ..write(obj.id)
       ..writeByte(1)
@@ -49,28 +48,26 @@ class UserAdapter extends TypeAdapter<User> {
       ..writeByte(3)
       ..write(obj.age)
       ..writeByte(4)
-      ..write(obj.targetExam)
+      ..write(obj.examPreparations)
       ..writeByte(5)
-      ..write(obj.selectedSubjects)
-      ..writeByte(6)
       ..write(obj.totalXP)
-      ..writeByte(7)
+      ..writeByte(6)
       ..write(obj.currentLevel)
-      ..writeByte(8)
+      ..writeByte(7)
       ..write(obj.gems)
-      ..writeByte(9)
+      ..writeByte(8)
       ..write(obj.hearts)
-      ..writeByte(10)
+      ..writeByte(9)
       ..write(obj.currentStreak)
-      ..writeByte(11)
+      ..writeByte(10)
       ..write(obj.longestStreak)
-      ..writeByte(12)
+      ..writeByte(11)
       ..write(obj.lastActiveDate)
-      ..writeByte(13)
+      ..writeByte(12)
       ..write(obj.createdAt)
-      ..writeByte(14)
+      ..writeByte(13)
       ..write(obj.avatarUrl)
-      ..writeByte(15)
+      ..writeByte(14)
       ..write(obj.weeklyXP);
   }
 

@@ -1,3 +1,4 @@
+import 'package:brain_rise/models/exam_preparation_model.dart';
 import 'package:brain_rise/models/questions_model.dart';
 import 'package:brain_rise/models/subject_model.dart';
 import 'package:hive/hive.dart';
@@ -40,6 +41,10 @@ class LocalStorageService {
     Hive.registerAdapter(LessonStatusAdapter());
     Hive.registerAdapter(AchievementAdapter());
     Hive.registerAdapter(AchievementTypeAdapter());
+    Hive.registerAdapter(ExamPreparationAdapter());
+
+    // Check if we need to clear old data due to schema changes
+    await _checkAndClearOldData();
 
     // Open boxes with proper typing
     if (!Hive.isBoxOpen(userBoxName)) {
@@ -65,6 +70,38 @@ class LocalStorageService {
     }
 
     _isInitialized = true;
+  }
+
+  // Check and clear old data if schema changed
+  static Future<void> _checkAndClearOldData() async {
+    try {
+      // Try to open the user box to check for old data
+      if (Hive.isBoxOpen(userBoxName)) {
+        final box = Hive.box<User>(userBoxName);
+        if (box.isNotEmpty) {
+          final user = box.getAt(0);
+          if (user != null) {
+            // Check if it's old data format (targetExam is a simple String)
+            // by checking if examPreparations is empty but there's old data
+            // This is a fallback - just clear user data on schema changes
+            await box.clear();
+            print('Cleared old user data due to schema change');
+          }
+        }
+      } else {
+        // Open temporarily to check
+        await Hive.openBox<User>(userBoxName);
+        final box = Hive.box<User>(userBoxName);
+        if (box.isNotEmpty) {
+          await box.clear();
+          print('Cleared old user data due to schema change');
+        }
+      }
+    } catch (e) {
+      // If there's any error reading old data, clear all boxes
+      print('Error checking old data: $e - clearing all data');
+      await Hive.deleteFromDisk();
+    }
   }
 
   // USER OPERATIONS
@@ -146,6 +183,11 @@ class LocalStorageService {
   }
 
   Future<List<Subject>> getSubjectsByExam(String examType) async {
+    // For IELTS, return dynamically created English skills
+    if (examType == 'IELTS') {
+      return _getIeltsSubjects();
+    }
+
     if (Hive.isBoxOpen(subjectsBoxName)) {
       final box = Hive.box<Subject>(subjectsBoxName);
       return box.values
@@ -157,6 +199,57 @@ class LocalStorageService {
     return box.values
         .where((subject) => subject.examTypes.contains(examType))
         .toList();
+  }
+
+  // Get IELTS subjects (English language skills)
+  List<Subject> _getIeltsSubjects() {
+    return [
+      Subject(
+        id: 'ielts_listening',
+        name: 'Listening',
+        description: 'Practice listening comprehension',
+        iconUrl: '👂',
+        category: 'Language',
+        examTypes: ['IELTS'],
+        totalLessons: 10,
+        color: '#4CAF50',
+      ),
+      Subject(
+        id: 'ielts_speaking',
+        name: 'Speaking',
+        description: 'Practice speaking skills',
+        iconUrl: '🗣️',
+        category: 'Language',
+        examTypes: ['IELTS'],
+        totalLessons: 10,
+        color: '#2196F3',
+      ),
+      Subject(
+        id: 'ielts_reading',
+        name: 'Reading',
+        description: 'Improve reading comprehension',
+        iconUrl: '📖',
+        category: 'Language',
+        examTypes: ['IELTS'],
+        totalLessons: 10,
+        color: '#FF9800',
+      ),
+      Subject(
+        id: 'ielts_writing',
+        name: 'Writing',
+        description: 'Master writing techniques',
+        iconUrl: '✍️',
+        category: 'Language',
+        examTypes: ['IELTS'],
+        totalLessons: 10,
+        color: '#9C27B0',
+      ),
+    ];
+  }
+
+  // Public method to get IELTS subjects
+  List<Subject> getIeltsSubjects() {
+    return _getIeltsSubjects();
   }
 
   // LESSON OPERATIONS

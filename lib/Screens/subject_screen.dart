@@ -1,10 +1,9 @@
 import 'package:brain_rise/Screens/subject_details_screen.dart';
+import 'package:brain_rise/models/subject_model.dart';
 import 'package:brain_rise/providers/user_provider.dart';
 import 'package:brain_rise/services/local_storage_service.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-
-import '../models/subject_model.dart';
 
 class SubjectScreen extends StatefulWidget {
   const SubjectScreen({super.key});
@@ -25,9 +24,35 @@ class _SubjectScreenState extends State<SubjectScreen> {
 
   Future<void> _loadSubjects() async {
     final storage = context.read<LocalStorageService>();
+    final userProvider = context.read<UserProvider>();
+    final currentUser = userProvider.currentUser;
+
+    if (currentUser == null) {
+      setState(() {
+        _subjects = [];
+        _isLoading = false;
+      });
+      return;
+    }
+
+    // Get all subjects from storage
     final allSubjects = await storage.getAllSubjects();
+
+    // Filter subjects to only show:
+    // 1. Subjects related to user's target exam
+    // 2. Subjects that user selected during onboarding
+    final filteredSubjects = allSubjects.where((subject) {
+      final isRelatedToExam = subject.examTypes.contains(
+        currentUser.targetExam,
+      );
+      final isSelectedByUser = currentUser.selectedSubjects.contains(
+        subject.id,
+      );
+      return isRelatedToExam && isSelectedByUser;
+    }).toList();
+
     setState(() {
-      _subjects = allSubjects;
+      _subjects = filteredSubjects;
       _isLoading = false;
     });
   }
@@ -35,11 +60,36 @@ class _SubjectScreenState extends State<SubjectScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('All Subjects'), elevation: 0),
+      appBar: AppBar(title: const Text('My Subjects'), elevation: 0),
       body: _isLoading
           ? const Center(child: CircularProgressIndicator())
           : _subjects.isEmpty
-          ? const Center(child: Text('No subjects available'))
+          ? Center(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Icon(
+                    Icons.school_outlined,
+                    size: 64,
+                    color: Colors.grey[400],
+                  ),
+                  const SizedBox(height: 16),
+                  Text(
+                    'No subjects available',
+                    style: Theme.of(
+                      context,
+                    ).textTheme.titleLarge?.copyWith(color: Colors.grey[600]),
+                  ),
+                  const SizedBox(height: 8),
+                  Text(
+                    'Your selected subjects will appear here',
+                    style: Theme.of(
+                      context,
+                    ).textTheme.bodyMedium?.copyWith(color: Colors.grey[500]),
+                  ),
+                ],
+              ),
+            )
           : ListView.builder(
               padding: const EdgeInsets.all(16),
               itemCount: _subjects.length,

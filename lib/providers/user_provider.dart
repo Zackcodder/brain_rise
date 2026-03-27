@@ -1,5 +1,6 @@
 // providers/user_provider.dart
 import 'package:flutter/foundation.dart';
+import '../models/exam_preparation_model.dart';
 import '../models/user_model.dart';
 import '../services/local_storage_service.dart';
 
@@ -14,6 +15,13 @@ class UserProvider with ChangeNotifier {
   User? get currentUser => _currentUser;
   bool get isLoggedIn => _currentUser != null;
 
+  // Get currently active exam
+  ExamPreparation? get activeExam => _currentUser?.activeExam;
+
+  // Get list of all exam preparations
+  List<ExamPreparation> get examPreparations =>
+      _currentUser?.examPreparations ?? [];
+
   Future<void> _loadUser() async {
     _currentUser = await _storageService.getCurrentUser();
     notifyListeners();
@@ -25,12 +33,19 @@ class UserProvider with ChangeNotifier {
     required String targetExam,
     required List<String> selectedSubjects,
   }) async {
+    // Create the first exam preparation
+    final examPrep = ExamPreparation(
+      examType: targetExam,
+      selectedSubjects: selectedSubjects,
+      isActive: true,
+      createdAt: DateTime.now(),
+    );
+
     final user = User(
       id: DateTime.now().millisecondsSinceEpoch.toString(),
       name: name,
       age: age,
-      targetExam: targetExam,
-      selectedSubjects: selectedSubjects,
+      examPreparations: [examPrep],
       createdAt: DateTime.now(),
       hearts: 5,
       gems: 0,
@@ -43,9 +58,71 @@ class UserProvider with ChangeNotifier {
     notifyListeners();
   }
 
+  // Add a new exam preparation
+  Future<void> addExamPreparation({
+    required String examType,
+    required List<String> selectedSubjects,
+  }) async {
+    if (_currentUser == null) return;
+
+    final newExamPrep = ExamPreparation(
+      examType: examType,
+      selectedSubjects: selectedSubjects,
+      isActive: false,
+      createdAt: DateTime.now(),
+    );
+
+    _currentUser!.examPreparations.add(newExamPrep);
+    await updateUser(_currentUser!);
+  }
+
+  // Switch to a different exam preparation
+  Future<void> switchToExam(String examType) async {
+    if (_currentUser == null) return;
+
+    for (var prep in _currentUser!.examPreparations) {
+      prep.isActive = prep.examType == examType;
+    }
+
+    await updateUser(_currentUser!);
+  }
+
+  // Update profile (name and age)
+  Future<void> updateProfile({String? name, int? age}) async {
+    if (_currentUser == null) return;
+
+    if (name != null) _currentUser!.name = name;
+    if (age != null) _currentUser!.age = age;
+
+    await updateUser(_currentUser!);
+  }
+
+  // Update subjects for an exam preparation
+  Future<void> updateExamSubjects(
+    String examType,
+    List<String> subjects,
+  ) async {
+    if (_currentUser == null) return;
+
+    final index = _currentUser!.examPreparations.indexWhere(
+      (e) => e.examType == examType,
+    );
+
+    if (index != -1) {
+      _currentUser!.examPreparations[index].selectedSubjects = subjects;
+      await updateUser(_currentUser!);
+    }
+  }
+
   Future<void> updateUser(User user) async {
     await _storageService.saveUser(user);
     _currentUser = user;
+    notifyListeners();
+  }
+
+  Future<void> logout() async {
+    await _storageService.deleteUser();
+    _currentUser = null;
     notifyListeners();
   }
 

@@ -28,13 +28,9 @@ class _SplashScreenState extends State<SplashScreen> {
     if (!mounted) return;
     final questionService = context.read<QuestionService>();
 
-    ///Load initial data if not already loaded
-    final isLoaded = await questionService.isDataLoaded();
-    if (!mounted) return;
-
-    if (!isLoaded) {
-      await questionService.loadInitialData();
-    }
+    // Force reload initial data to get the new lessons and questions
+    // This ensures users see the updated 20 topics per subject
+    await questionService.loadInitialData();
 
     // Wait for user provider to load
     if (!mounted) return;

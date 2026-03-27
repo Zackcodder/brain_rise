@@ -1,3 +1,4 @@
+import 'package:brain_rise/models/exam_preparation_model.dart';
 import 'package:brain_rise/models/user_model.dart';
 import 'package:brain_rise/providers/progress_provider.dart';
 import 'package:brain_rise/providers/user_provider.dart';
@@ -42,8 +43,14 @@ class _LeadershipBoardScreenState extends State<LeadershipBoardScreen> {
             name: 'Alice Johnson',
             email: 'alice@example.com',
             age: 18,
-            targetExam: 'WAEC',
-            selectedSubjects: ['math', 'english'],
+            examPreparations: [
+              ExamPreparation(
+                examType: 'WAEC',
+                selectedSubjects: ['math', 'english'],
+                isActive: true,
+                createdAt: DateTime.now(),
+              ),
+            ],
             currentLevel: 8,
             totalXP: 750,
             gems: 120,
@@ -60,8 +67,14 @@ class _LeadershipBoardScreenState extends State<LeadershipBoardScreen> {
             name: 'Bob Smith',
             email: 'bob@example.com',
             age: 17,
-            targetExam: 'NECO',
-            selectedSubjects: ['physics', 'chemistry'],
+            examPreparations: [
+              ExamPreparation(
+                examType: 'NECO',
+                selectedSubjects: ['physics', 'chemistry'],
+                isActive: true,
+                createdAt: DateTime.now(),
+              ),
+            ],
             currentLevel: 6,
             totalXP: 520,
             gems: 95,
@@ -78,8 +91,14 @@ class _LeadershipBoardScreenState extends State<LeadershipBoardScreen> {
             name: 'Carol Davis',
             email: 'carol@example.com',
             age: 19,
-            targetExam: 'IELTS',
-            selectedSubjects: ['biology', 'english'],
+            examPreparations: [
+              ExamPreparation(
+                examType: 'IELTS',
+                selectedSubjects: ['ielts_listening', 'ielts_reading'],
+                isActive: true,
+                createdAt: DateTime.now(),
+              ),
+            ],
             currentLevel: 9,
             totalXP: 890,
             gems: 150,
@@ -96,8 +115,14 @@ class _LeadershipBoardScreenState extends State<LeadershipBoardScreen> {
             name: 'David Wilson',
             email: 'david@example.com',
             age: 16,
-            targetExam: 'WAEC',
-            selectedSubjects: ['math', 'physics'],
+            examPreparations: [
+              ExamPreparation(
+                examType: 'WAEC',
+                selectedSubjects: ['math', 'physics'],
+                isActive: true,
+                createdAt: DateTime.now(),
+              ),
+            ],
             currentLevel: 7,
             totalXP: 680,
             gems: 110,
@@ -221,14 +246,14 @@ class _LeadershipBoardScreenState extends State<LeadershipBoardScreen> {
                   const SizedBox(height: 4),
                   Row(
                     children: [
-                      Icon(Icons.star, size: 16, color: Colors.amber),
+                      const Icon(Icons.star, size: 16, color: Colors.amber),
                       const SizedBox(width: 4),
                       Text(
                         'Level ${user.currentLevel}',
                         style: Theme.of(context).textTheme.bodySmall,
                       ),
                       const SizedBox(width: 16),
-                      Icon(Icons.book, size: 16, color: Colors.blue),
+                      const Icon(Icons.book, size: 16, color: Colors.blue),
                       const SizedBox(width: 4),
                       Text(
                         '$lessonsCompleted lessons',

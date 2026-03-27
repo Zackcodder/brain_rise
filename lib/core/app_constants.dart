@@ -25,4 +25,17 @@ class AppConstants {
   static const int easyQuestionTime = 30;
   static const int mediumQuestionTime = 60;
   static const int hardQuestionTime = 90;
+
+  // Subject selection limits per exam type
+  static const int minSubjectsDefault = 3;
+  static const int maxSubjectsWaecNeco = 8;
+  static const int maxSubjectsJamb = 3;
+
+  // IELTS specific subjects (English language skills)
+  static const List<String> ieltsSubjects = [
+    'Listening',
+    'Speaking',
+    'Reading',
+    'Writing',
+  ];
 }

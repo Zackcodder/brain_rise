@@ -1,6 +1,8 @@
 // models/user.dart
 import 'package:hive/hive.dart';
 
+import 'exam_preparation_model.dart';
+
 part 'user_model.g.dart';
 
 @HiveType(typeId: 0)
@@ -18,39 +20,36 @@ class User extends HiveObject {
   int age;
 
   @HiveField(4)
-  String targetExam; // WAEC, NECO, IELTS
+  List<ExamPreparation> examPreparations;
 
   @HiveField(5)
-  List<String> selectedSubjects;
-
-  @HiveField(6)
   int totalXP;
 
-  @HiveField(7)
+  @HiveField(6)
   int currentLevel;
 
-  @HiveField(8)
+  @HiveField(7)
   int gems;
 
-  @HiveField(9)
+  @HiveField(8)
   int hearts;
 
-  @HiveField(10)
+  @HiveField(9)
   int currentStreak;
 
-  @HiveField(11)
+  @HiveField(10)
   int longestStreak;
 
-  @HiveField(12)
+  @HiveField(11)
   DateTime? lastActiveDate;
 
-  @HiveField(13)
+  @HiveField(12)
   DateTime createdAt;
 
-  @HiveField(14)
+  @HiveField(13)
   String avatarUrl;
 
-  @HiveField(15)
+  @HiveField(14)
   Map<String, int> weeklyXP; // {Monday: 50, Tuesday: 30, ...}
 
   User({
@@ -58,8 +57,7 @@ class User extends HiveObject {
     required this.name,
     this.email,
     required this.age,
-    required this.targetExam,
-    required this.selectedSubjects,
+    required this.examPreparations,
     this.totalXP = 0,
     this.currentLevel = 1,
     this.gems = 0,
@@ -75,4 +73,19 @@ class User extends HiveObject {
   // Helper methods
   int get xpForNextLevel => currentLevel * 100;
   double get progressToNextLevel => totalXP % 100 / 100;
+
+  // Get currently active exam preparation
+  ExamPreparation? get activeExam {
+    try {
+      return examPreparations.firstWhere((e) => e.isActive);
+    } catch (_) {
+      return examPreparations.isNotEmpty ? examPreparations.first : null;
+    }
+  }
+
+  // Get current target exam (for backwards compatibility)
+  String get targetExam => activeExam?.examType ?? '';
+
+  // Get current selected subjects (for backwards compatibility)
+  List<String> get selectedSubjects => activeExam?.selectedSubjects ?? [];
 }
