@@ -1,43 +1,47 @@
-import 'package:brain_rise/Screens/onboarding/select_student_category_screen.dart';
+import 'package:brain_rise/Screens/onboarding/select_subject_screen.dart';
 import 'package:flutter/material.dart';
 
-class SelectExamTypeScreen extends StatefulWidget {
-  const SelectExamTypeScreen({super.key});
+class SelectStudentCategoryScreen extends StatefulWidget {
+  const SelectStudentCategoryScreen({super.key, required this.examType});
+
+  final String examType;
 
   @override
-  State<SelectExamTypeScreen> createState() => _SelectExamTypeScreenState();
+  State<SelectStudentCategoryScreen> createState() =>
+      _SelectStudentCategoryScreenState();
 }
 
-class _SelectExamTypeScreenState extends State<SelectExamTypeScreen> {
-  String? selectedExam;
+class _SelectStudentCategoryScreenState
+    extends State<SelectStudentCategoryScreen> {
+  String? selectedCategory;
 
-  final List<Map<String, String>> exams = [
+  final List<Map<String, String>> categories = [
     {
-      'id': 'WAEC',
-      'name': 'WAEC',
-      'description': 'West African Examinations Council',
+      'id': 'all',
+      'name': 'All Subjects',
+      'description': 'Show all available subjects',
     },
     {
-      'id': 'NECO',
-      'name': 'NECO',
-      'description': 'National Examinations Council',
+      'id': 'science',
+      'name': 'Science Student',
+      'description': 'Physics, Chemistry, Biology, Further Math',
     },
     {
-      'id': 'IELTS',
-      'name': 'IELTS',
-      'description': 'International English Language Testing System',
+      'id': 'arts',
+      'name': 'Arts Student',
+      'description': 'Literature, Government, History, CRS/IRS',
     },
     {
-      'id': 'JAMB',
-      'name': 'JAMB',
-      'description': 'Joint Admissions and Matriculation Board',
+      'id': 'commerce',
+      'name': 'Commerce Student',
+      'description': 'Accounting, Economics, Commerce, Math',
     },
   ];
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Select Your Target Exam')),
+      appBar: AppBar(title: const Text('Select Student Category')),
       body: SafeArea(
         child: Padding(
           padding: const EdgeInsets.all(24.0),
@@ -45,30 +49,26 @@ class _SelectExamTypeScreenState extends State<SelectExamTypeScreen> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
-                'What exam are you preparing for?',
+                'What type of student are you?',
                 style: Theme.of(context).textTheme.displaySmall,
               ),
               const SizedBox(height: 8),
               Text(
-                'We\'ll customize your learning path',
+                'This helps us show relevant subjects for \${widget.examType}',
                 style: Theme.of(context).textTheme.bodyMedium,
               ),
               const SizedBox(height: 32),
               Expanded(
                 child: ListView.builder(
-                  itemCount: exams.length,
+                  itemCount: categories.length,
                   itemBuilder: (context, index) {
-                    final exam = exams[index];
-                    final isSelected = selectedExam == exam['id'];
-
+                    final category = categories[index];
+                    final isSelected = selectedCategory == category['id'];
                     return Padding(
                       padding: const EdgeInsets.only(bottom: 12.0),
                       child: InkWell(
-                        onTap: () {
-                          setState(() {
-                            selectedExam = exam['id'];
-                          });
-                        },
+                        onTap: () =>
+                            setState(() => selectedCategory = category['id']),
                         borderRadius: BorderRadius.circular(16),
                         child: Container(
                           padding: const EdgeInsets.all(20),
@@ -99,7 +99,7 @@ class _SelectExamTypeScreenState extends State<SelectExamTypeScreen> {
                                 ),
                                 child: Center(
                                   child: Text(
-                                    exam['name']![0],
+                                    category['name']![0],
                                     style: TextStyle(
                                       fontSize: 24,
                                       fontWeight: FontWeight.bold,
@@ -116,13 +116,13 @@ class _SelectExamTypeScreenState extends State<SelectExamTypeScreen> {
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
                                     Text(
-                                      exam['name']!,
+                                      category['name']!,
                                       style: Theme.of(
                                         context,
                                       ).textTheme.headlineMedium,
                                     ),
                                     Text(
-                                      exam['description']!,
+                                      category['description']!,
                                       style: Theme.of(
                                         context,
                                       ).textTheme.bodySmall,
@@ -146,13 +146,14 @@ class _SelectExamTypeScreenState extends State<SelectExamTypeScreen> {
               SizedBox(
                 width: double.infinity,
                 child: ElevatedButton(
-                  onPressed: selectedExam == null
+                  onPressed: selectedCategory == null
                       ? null
                       : () {
                           Navigator.of(context).push(
                             MaterialPageRoute(
-                              builder: (_) => SelectStudentCategoryScreen(
-                                examType: selectedExam!,
+                              builder: (_) => SelectSubjectScreen(
+                                examType: widget.examType,
+                                studentCategory: selectedCategory!,
                               ),
                             ),
                           );

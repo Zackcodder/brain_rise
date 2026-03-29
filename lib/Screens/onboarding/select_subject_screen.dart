@@ -8,11 +8,13 @@ import '../../services/local_storage_service.dart';
 
 class SelectSubjectScreen extends StatefulWidget {
   final String examType;
+  final String? studentCategory;
   final bool isAddingNewExam;
 
   const SelectSubjectScreen({
     super.key,
     required this.examType,
+    this.studentCategory,
     this.isAddingNewExam = false,
   });
 
@@ -24,6 +26,14 @@ class _SelectSubjectScreenState extends State<SelectSubjectScreen> {
   List<Subject> _subjects = [];
   Set<String> _selectedSubjects = {};
   bool _isLoading = true;
+  String _currentCategory = 'all';
+
+  @override
+  void initState() {
+    super.initState();
+    _currentCategory = widget.studentCategory ?? 'all';
+    _loadSubjects();
+  }
 
   // Helper methods to get limits based on exam type
   int get _minSubjects {
@@ -73,12 +83,6 @@ class _SelectSubjectScreenState extends State<SelectSubjectScreen> {
     return _selectedSubjects.length >= _minSubjects;
   }
 
-  @override
-  void initState() {
-    super.initState();
-    _loadSubjects();
-  }
-
   Future<void> _loadSubjects() async {
     final storage = context.read<LocalStorageService>();
     List<Subject> subjects;
@@ -90,9 +94,41 @@ class _SelectSubjectScreenState extends State<SelectSubjectScreen> {
       subjects = await storage.getSubjectsByExam(widget.examType);
     }
 
+    // Filter by student category
+    if (_currentCategory != 'all') {
+      subjects = subjects
+          .where(
+            (s) => s.category.toLowerCase() == _currentCategory.toLowerCase(),
+          )
+          .toList();
+    }
+
     setState(() {
       _subjects = subjects;
       _isLoading = false;
+    });
+  }
+
+  Future<void> _filterSubjects() async {
+    final storage = context.read<LocalStorageService>();
+    List<Subject> subjects;
+
+    if (widget.examType == 'IELTS') {
+      subjects = _getIeltsSubjects();
+    } else {
+      subjects = await storage.getSubjectsByExam(widget.examType);
+    }
+
+    if (_currentCategory != 'all') {
+      subjects = subjects
+          .where(
+            (s) => s.category.toLowerCase() == _currentCategory.toLowerCase(),
+          )
+          .toList();
+    }
+
+    setState(() {
+      _subjects = subjects;
     });
   }
 
@@ -215,6 +251,36 @@ class _SelectSubjectScreenState extends State<SelectSubjectScreen> {
                     Text(
                       _subjectLimitText,
                       style: Theme.of(context).textTheme.bodyMedium,
+                    ),
+                    const SizedBox(height: 16),
+                    DropdownButton<String>(
+                      value: _currentCategory,
+                      isExpanded: true,
+                      hint: const Text('Filter by Student Category'),
+                      items: ['all', 'science', 'arts', 'commerce'].map((
+                        String value,
+                      ) {
+                        return DropdownMenuItem<String>(
+                          value: value,
+                          child: Text(
+                            value
+                                .toUpperCase()
+                                .replaceAllMapped(
+                                  RegExp(r'(?<=.)([A-Z])'),
+                                  (m) => ' ${m[1]}',
+                                )
+                                .trim(),
+                          ),
+                        );
+                      }).toList(),
+                      onChanged: (String? newValue) {
+                        if (newValue != null) {
+                          setState(() {
+                            _currentCategory = newValue;
+                          });
+                          _filterSubjects();
+                        }
+                      },
                     ),
                     const SizedBox(height: 24),
                     Expanded(
